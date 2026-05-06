@@ -37,6 +37,7 @@
       align-items: center;
       gap: 4px;
       flex: 1;
+      padding-top: 52px;
     }
 
     .sidebar-bottom {
@@ -154,6 +155,54 @@
       display: block;
     }
 
+    /* ── Mobile sidebar toggle ── */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      width: 36px;
+      height: 36px;
+      background: #1a1a1f;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      z-index: 30;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      transition: background 0.15s;
+    }
+
+    .sidebar-toggle:hover { background: #2a2a32; }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 18;
+    }
+
+    .sidebar-overlay.visible { display: block; }
+
+    @media (max-width: 640px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 20;
+      }
+
+      .sidebar.open { transform: translateX(0); }
+
+      .sidebar-toggle { display: flex; }
+    }
+
     /* Placeholder shown when no frame loaded */
     .placeholder {
       position: absolute;
@@ -168,9 +217,19 @@
   </style>
 </head>
 <body>
+  <!-- Mobile: backdrop + hamburger -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()" aria-label="Open navigation">
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+      <rect width="18" height="2" rx="1" fill="currentColor"/>
+      <rect y="6" width="18" height="2" rx="1" fill="currentColor"/>
+      <rect y="12" width="18" height="2" rx="1" fill="currentColor"/>
+    </svg>
+  </button>
+
   <div class="layout">
     <!-- Sidebar -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
       <div class="sidebar-top">
 
         <!-- FabricBOM -->
@@ -216,9 +275,7 @@
 
   <script>
     function activateApp(btn) {
-      // Deactivate all buttons
       document.querySelectorAll('.nav-btn[data-app]').forEach(b => b.classList.remove('active'));
-      // Hide all frames
       document.querySelectorAll('.app-frame').forEach(f => f.classList.remove('active'));
 
       btn.classList.add('active');
@@ -233,6 +290,21 @@
       } else {
         placeholder.style.display = 'flex';
       }
+
+      closeSidebar();
+    }
+
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('visible');
+      document.getElementById('sidebarToggle').style.display = 'none';
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('visible');
+      // Hamburger only relevant on mobile; CSS display:none handles desktop
+      document.getElementById('sidebarToggle').style.display = '';
     }
   </script>
 </body>
